@@ -69,7 +69,8 @@ app.init = async () => {
         console.log('Server initialization completed');
     } catch (e) {
         console.error('Failed to initialize:', e);
-        process.exit(1);
+        app.initializationError = e;
+        // Do not exit, allow server to report error
     }
 };
 
@@ -138,6 +139,32 @@ app.get('/dashboard/whatsapp', authenticateToken, (req, res) => {
 });
 
 app.get('/', async (req, res) => {
+    if (app.initializationError) {
+        return res.status(500).send(`
+            <!DOCTYPE html>
+            <html dir="rtl" lang="ar">
+            <head>
+                <meta charset="UTF-8">
+                <title>خطأ في تشغيل المنصة</title>
+                <style>
+                    body { font-family: sans-serif; padding: 2rem; direction: rtl; text-align: right; background: #fff5f5; color: #c53030; }
+                    .error-box { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-right: 4px solid #c53030; }
+                    pre { background: #f7fafc; padding: 1rem; border-radius: 4px; overflow-x: auto; direction: ltr; text-align: left; color: #2d3748; }
+                </style>
+            </head>
+            <body>
+                <div class="error-box">
+                    <h1>حدث خطأ أثناء تشغيل المنصة</h1>
+                    <p>يرجى مراجعة سجلات الخادم أو الاتصال بالدعم الفني.</p>
+                    <hr>
+                    <h3>تفاصيل الخطأ:</h3>
+                    <pre>${app.initializationError.stack || app.initializationError.message}</pre>
+                </div>
+            </body>
+            </html>
+        `);
+    }
+
     if (!app.isInitialized) {
         return res.status(200).send(`
             <!DOCTYPE html>

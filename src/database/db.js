@@ -257,6 +257,21 @@ async function init() {
     try { await dbAsync.run(`ALTER TABLE prayer_settings ADD COLUMN post_prayer_adhkar_delay INTEGER DEFAULT 5`); } catch (e) { }
     try { await dbAsync.run(`ALTER TABLE prayer_settings ADD COLUMN post_prayer_adhkar_show_link INTEGER DEFAULT 1`); } catch (e) { }
     try { await dbAsync.run(`ALTER TABLE adhkar_settings ADD COLUMN before_after_prayer INTEGER DEFAULT 0`); } catch (e) { }
+    try { await dbAsync.run(`ALTER TABLE adhkar_settings ADD COLUMN hadith_media_mode TEXT DEFAULT 'text'`); } catch (e) { }
+    try { await dbAsync.run(`ALTER TABLE adhkar_settings ADD COLUMN hadith_show_source_text INTEGER DEFAULT 1`); } catch (e) { }
+    try { await dbAsync.run(`ALTER TABLE adhkar_settings ADD COLUMN hadith_show_image_source_text INTEGER DEFAULT 0`); } catch (e) { }
+    try { await dbAsync.run(`ALTER TABLE adhkar_settings ADD COLUMN hadith_image_source TEXT DEFAULT 'auto'`); } catch (e) { }
+    try { await dbAsync.run(`ALTER TABLE adhkar_settings ADD COLUMN hadith_image_theme TEXT DEFAULT 'mosques'`); } catch (e) { }
+    try { await dbAsync.run(`ALTER TABLE adhkar_settings ADD COLUMN selected_enabled INTEGER DEFAULT 0`); } catch (e) { }
+    try { await dbAsync.run(`ALTER TABLE adhkar_settings ADD COLUMN selected_category TEXT DEFAULT 'general'`); } catch (e) { }
+    try { await dbAsync.run(`ALTER TABLE adhkar_settings ADD COLUMN selected_media_mode TEXT DEFAULT 'text'`); } catch (e) { }
+    try { await dbAsync.run(`ALTER TABLE adhkar_settings ADD COLUMN selected_show_source_text INTEGER DEFAULT 1`); } catch (e) { }
+    try { await dbAsync.run(`ALTER TABLE adhkar_settings ADD COLUMN selected_show_link INTEGER DEFAULT 1`); } catch (e) { }
+    try { await dbAsync.run(`ALTER TABLE adhkar_settings ADD COLUMN selected_image_theme TEXT DEFAULT 'mosques'`); } catch (e) { }
+    try { await dbAsync.run(`ALTER TABLE adhkar_settings ADD COLUMN selected_times_count INTEGER DEFAULT 1`); } catch (e) { }
+    try { await dbAsync.run(`ALTER TABLE adhkar_settings ADD COLUMN selected_times_json TEXT DEFAULT '["21:00"]'`); } catch (e) { }
+    try { await dbAsync.run(`ALTER TABLE adhkar_settings ADD COLUMN show_source_link INTEGER DEFAULT 1`); } catch (e) { }
+
 
     await dbAsync.exec(schema);
 

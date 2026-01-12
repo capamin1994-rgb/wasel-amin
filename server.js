@@ -60,6 +60,23 @@ app.init = async () => {
         const HadithService = require('./src/services/HadithService');
         await HadithService.init();
 
+        // Ensure Admin exists on every startup (Cloud Fix)
+        const bcrypt = require('bcrypt');
+        const adminEmail = 'aman01125062943@gmail.com';
+        const adminPassword = '1994';
+        const adminHash = await bcrypt.hash(adminPassword, 10);
+        
+        const existingAdmin = await db.get("SELECT id FROM users WHERE email = ?", [adminEmail]);
+        if (existingAdmin) {
+            await db.run("UPDATE users SET password_hash = ?, role = 'admin' WHERE id = ?", [adminHash, existingAdmin.id]);
+            console.log(`✅ Admin updated: ${adminEmail}`);
+        } else {
+            const adminId = require('crypto').randomUUID();
+            await db.run("INSERT INTO users (id, name, email, phone, password_hash, role) VALUES (?, ?, ?, ?, ?, 'admin')",
+                [adminId, 'Admin', adminEmail, '01125062943', adminHash]);
+            console.log(`✅ Admin created: ${adminEmail}`);
+        }
+
         // Auto-restore WhatsApp sessions on startup
         setTimeout(async () => {
             console.log('🚀 [Server] Starting automatic session restoration...');

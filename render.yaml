@@ -10,4 +10,6 @@ services:
       - key: PORT
         value: 3001
       - key: JWT_SECRET
-        generateValue: true
+        value: wasel_secret_key_1994_secure
+      - key: NODE_VERSION
+        value: 20

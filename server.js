@@ -20,6 +20,7 @@ process.on('uncaughtException', (error) => {
 
 
 const app = express();
+app.isInitialized = false;
 const PORT = process.env.PORT || 5000;
 
 // Apply helmet early with standard security (CSP handled by ServerOptimizer)
@@ -137,6 +138,31 @@ app.get('/dashboard/whatsapp', authenticateToken, (req, res) => {
 });
 
 app.get('/', async (req, res) => {
+    if (!app.isInitialized) {
+        return res.status(200).send(`
+            <!DOCTYPE html>
+            <html dir="rtl" lang="ar">
+            <head>
+                <meta charset="UTF-8">
+                <title>جاري تشغيل المنصة...</title>
+                <style>
+                    body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background: #f0f2f5; color: #1c1e21; text-align: center; }
+                    .card { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+                    .spinner { border: 4px solid rgba(0,0,0,0.1); width: 36px; height: 36px; border-radius: 50%; border-left-color: #007bff; animation: spin 1s linear infinite; margin: 0 auto 1rem; }
+                    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+                </style>
+                <meta http-equiv="refresh" content="5">
+            </head>
+            <body>
+                <div class="card">
+                    <div class="spinner"></div>
+                    <h1>جاري تشغيل المنصة...</h1>
+                    <p>الموقع سيكون متاحاً خلال لحظات، يرجى الانتظار.</p>
+                </div>
+            </body>
+            </html>
+        `);
+    }
     try {
         const settings = await SettingsService.get('landing_page');
         const plans = await PlanService.getAll();
@@ -350,7 +376,7 @@ app.post('/dashboard/settings', authenticateToken, async (req, res) => {
 // Health check endpoint for Docker
 app.get('/health', (req, res) => {
     res.status(200).json({
-        status: 'ok',
+        status: app.isInitialized ? 'ok' : 'initializing',
         uptime: process.uptime(),
         timestamp: new Date().toISOString()
     });
@@ -366,10 +392,19 @@ app.use('/api', (error, req, res, next) => {
 });
 
 if (require.main === module) {
-    app.init().then(() => {
-        app.listen(PORT, () => {
-            console.log(`Server is running on http://localhost:${PORT}`);
-        });
+    app.listen(PORT, '0.0.0.0', () => {
+        console.log(`🚀 Server is running on http://0.0.0.0:${PORT}`);
+        console.log('📦 Starting background initialization...');
+
+        app.init()
+            .then(() => {
+                app.isInitialized = true;
+                console.log('✅ Server initialization completed successfully');
+            })
+            .catch(err => {
+                console.error('❌ Critical initialization error:', err);
+                // In production, we might want to alert of failure but keep server up to show status/logs
+            });
     });
 }
 

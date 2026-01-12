@@ -1,12 +1,13 @@
 services:
   - type: web
-    name: whatsapp-saas-platform
-    env: node
+    name: wasel-amin
+    env: docker
     plan: free
-    buildCommand: npm install
-    startCommand: npm start
+    region: oregon
     envVars:
-      - key: NODE_VERSION
-        value: 20.0.0
-      - key: PUPPETEER_SKIP_CHROMIUM_DOWNLOAD
-        value: true
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: JWT_SECRET
+        generateValue: true

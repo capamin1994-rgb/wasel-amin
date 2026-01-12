@@ -26,6 +26,9 @@ RUN chmod -R 755 /app
 # Expose port
 EXPOSE 3001
 
+# Start the application
+CMD ["npm", "start"]
+
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:3001 || exit 1

@@ -21,7 +21,7 @@ process.on('uncaughtException', (error) => {
 
 const app = express();
 app.isInitialized = false;
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3001; // تغيير الافتراضي ليتوافق مع Render و Dockerfile
 
 // Apply helmet early with standard security (CSP handled by ServerOptimizer)
 app.use(helmet({

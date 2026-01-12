@@ -3,16 +3,28 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>تسجيل حساب جديد</title>
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --sat: env(safe-area-inset-top);
+            --sab: env(safe-area-inset-bottom);
+            --sal: env(safe-area-inset-left);
+            --sar: env(safe-area-inset-right);
+        }
+
+        body.auth-container {
+            padding-left: var(--sal);
+            padding-right: var(--sar);
+            padding-bottom: var(--sab);
+        }
+    </style>
 </head>
 
 <body class="auth-container">
-
-    <body class="auth-container">
-        <a href="/" class="btn-back-home" title="عودة للرئيسية"><i class="fas fa-times"></i></a>
+    <a href="/" class="btn-back-home" title="عودة للرئيسية"><i class="fas fa-times"></i></a>
 
         <div class="card-auth" style="max-width: 550px;">
             <div class="text-center mb-4">

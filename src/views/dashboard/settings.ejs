@@ -3,15 +3,25 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>إعدادات صفحة الهبوط | واصل</title>
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        :root {
+            --sat: env(safe-area-inset-top);
+            --sab: env(safe-area-inset-bottom);
+            --sal: env(safe-area-inset-left);
+            --sar: env(safe-area-inset-right);
+        }
+
         .admin-layout {
             display: flex;
             min-height: 100vh;
             background: var(--bg-main);
+            padding-left: var(--sal);
+            padding-right: var(--sar);
+            padding-bottom: var(--sab);
         }
 
         /* Toggle Switch CSS */

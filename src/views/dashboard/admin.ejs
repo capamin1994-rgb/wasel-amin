@@ -3,15 +3,25 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>لوحة تحكم المدير | واصل</title>
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        :root {
+            --sat: env(safe-area-inset-top);
+            --sab: env(safe-area-inset-bottom);
+            --sal: env(safe-area-inset-left);
+            --sar: env(safe-area-inset-right);
+        }
+
         .admin-layout {
             display: flex;
             min-height: 100vh;
             background: var(--bg-main);
+            padding-left: var(--sal);
+            padding-right: var(--sar);
+            padding-bottom: var(--sab);
         }
 
         .admin-sidebar {
@@ -524,11 +534,10 @@
             }
         }
 
-        /* --- RESPONSIVE TABLES CSS (Matching User Dashboard) --- */
+        /* --- RESPONSIVE TABLES CSS (Improved for Mobile) --- */
         @media (max-width: 768px) {
             .data-table thead {
                 display: none;
-                /* Hide headers on mobile */
             }
 
             .data-table,
@@ -544,56 +553,60 @@
                 background: var(--bg-card);
                 border: 1px solid var(--border);
                 border-radius: 12px;
-                padding: 15px;
+                padding: 0;
                 box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+                overflow: hidden;
             }
 
             .data-table td {
-                border: none;
-                border-bottom: 1px solid var(--border);
-                position: relative;
-                padding-right: 50% !important;
-                padding-left: 10px;
-                text-align: left;
-                padding-top: 10px;
-                padding-bottom: 10px;
-                min-height: 40px;
                 display: flex;
+                justify-content: space-between;
                 align-items: center;
-                justify-content: flex-end;
-            }
-
-            .data-table td {
-                display: block;
+                padding: 12px 15px;
+                border-bottom: 1px solid var(--border);
                 text-align: left;
+                min-height: 50px;
+                gap: 10px;
             }
 
             .data-table td:last-child {
                 border-bottom: none;
-                padding-right: 10px !important;
-                text-align: center;
-                display: flex;
                 justify-content: center;
-                gap: 10px;
-                padding-bottom: 0;
+                padding: 15px;
+                background: var(--bg-secondary);
             }
 
             .data-table td::before {
                 content: attr(data-label);
-                position: absolute;
-                top: 10px;
-                right: 10px;
-                width: 45%;
-                white-space: nowrap;
-                font-weight: bold;
+                font-weight: 600;
                 color: var(--text-muted);
-                text-align: right;
+                font-size: 0.9rem;
+                flex-shrink: 0;
             }
 
-            /* Special case for Actions column */
+            /* Special case for Actions column - hide label */
             .data-table td[data-label="الإجراءات"]::before,
             .data-table td:last-child::before {
                 display: none;
+            }
+            
+            /* Adjust content alignment */
+            .data-table td > * {
+                text-align: left;
+            }
+
+            /* Fix Modal Content on Mobile */
+            .modal-content {
+                width: 95% !important;
+                margin: 10px;
+                padding: 1.5rem !important;
+                padding-bottom: calc(1.5rem + var(--sab)) !important; /* Safe area */
+                max-height: 85vh;
+            }
+            
+            .admin-content {
+                padding: 1rem;
+                padding-bottom: calc(1rem + var(--sab));
             }
 
             /* Responsive Utilities */
@@ -706,8 +719,8 @@
         .sidebar-toggle {
             display: none;
             position: fixed;
-            top: 20px;
-            right: 20px;
+            top: calc(20px + var(--sat));
+            right: calc(20px + var(--sar));
             z-index: 1001;
             background: var(--primary);
             color: white;
@@ -744,7 +757,9 @@
                 transition: right 0.3s ease;
                 box-shadow: var(--shadow-lg);
                 width: 280px;
-                overflow: hidden;
+                overflow-y: auto;
+                padding-top: var(--sat);
+                padding-bottom: var(--sab);
             }
 
             .admin-sidebar.open {
@@ -753,6 +768,7 @@
 
             .admin-content {
                 padding: 4rem 1rem 2rem;
+                padding-top: calc(4rem + var(--sat));
             }
 
             .stats-grid {

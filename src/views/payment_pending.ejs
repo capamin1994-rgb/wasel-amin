@@ -3,28 +3,39 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>جاري المراجعة | واصل</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --sat: env(safe-area-inset-top);
+            --sab: env(safe-area-inset-bottom);
+            --sal: env(safe-area-inset-left);
+            --sar: env(safe-area-inset-right);
+        }
+
         body {
             font-family: 'Cairo', sans-serif;
             background: #f3f4f6;
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0;
             text-align: center;
+            padding: var(--sat) var(--sar) var(--sab) var(--sal);
+            box-sizing: border-box;
         }
 
         .card {
             background: white;
-            padding: 50px;
+            padding: 2rem;
             border-radius: 20px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            width: 90%;
             max-width: 500px;
+            margin: 20px auto;
         }
 
         .icon-box {
@@ -37,7 +48,16 @@
             align-items: center;
             justify-content: center;
             font-size: 40px;
-            margin: 0 auto 30px;
+            margin: 0 auto 20px;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin: 0 0 1rem;
+        }
+
+        p {
+            font-size: 1rem;
         }
 
         .btn {
@@ -49,6 +69,11 @@
             text-decoration: none;
             font-weight: bold;
             margin-top: 20px;
+            transition: transform 0.2s;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
         }
     </style>
 </head>

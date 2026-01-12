@@ -1,5 +1,14 @@
 const jwt = require('jsonwebtoken');
-const SECRET = 'super_secret_key_123'; // In prod, use process.env
+const crypto = require('crypto');
+
+// Use environment variable for JWT secret, generate secure random if not set
+// WARNING: If JWT_SECRET is not set, a random secret is generated on each server restart,
+// which will invalidate all existing tokens. Always set JWT_SECRET in production.
+const SECRET = process.env.JWT_SECRET || (() => {
+    console.warn('⚠️  WARNING: JWT_SECRET environment variable not set. Using generated secret.');
+    console.warn('⚠️  All tokens will be invalidated on server restart. Set JWT_SECRET in production!');
+    return crypto.randomBytes(64).toString('hex');
+})();
 
 const authenticateToken = (req, res, next) => {
     const token = req.cookies.token;

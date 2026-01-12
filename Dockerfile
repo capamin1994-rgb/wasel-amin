@@ -12,7 +12,7 @@ COPY package*.json ./
 
 # Update npm to latest version and install dependencies
 RUN npm install -g npm@latest && \
-  npm ci --omit=dev
+  npm install --omit=dev
 
 # Copy application files
 COPY . .

@@ -731,6 +731,19 @@ async function init() {
         }
     }
 
+    // Add missing show_link columns to adhkar_settings
+    const showLinkColumns = ['morning_show_link', 'evening_show_link', 'hadith_show_link', 'content_show_link'];
+    for (const column of showLinkColumns) {
+        try {
+            await dbAsync.run(`ALTER TABLE adhkar_settings ADD COLUMN ${column} INTEGER DEFAULT 1`);
+            console.log(`Added ${column} column to adhkar_settings table`);
+        } catch (error) {
+            if (!error.message.includes('duplicate column name')) {
+                console.error(`Error adding ${column} column:`, error.message);
+            }
+        }
+    }
+
     console.log('Database Schema Initialized.');
 }
 

@@ -375,17 +375,53 @@ app.get('/dashboard', nocache, async (req, res) => {
 
 
 // Admin Settings Routes
-app.get('/dashboard/settings', async (req, res) => {
-    if (req.user.role !== 'admin') return res.redirect('/dashboard');
+app.get('/dashboard/settings', authenticateToken, async (req, res) => {
+    try {
+        if (req.user.role !== 'admin') return res.redirect('/dashboard');
 
-    const settings = await SettingsService.get('landing_page');
-    res.render('dashboard/settings', { user: req.user, settings });
+        const settings = await SettingsService.get('landing_page');
+        res.render('dashboard/settings', { user: req.user, settings });
+    } catch (error) {
+        console.error('Error loading settings page:', error);
+        res.status(500).send('خطأ في تحميل صفحة الإعدادات');
+    }
 });
 
 // Islamic Reminders Dashboard Route
 app.get('/dashboard/islamic-reminders', authenticateToken, async (req, res) => {
     try {
-        res.render('dashboard/islamic-reminders', { user: req.user });
+        // Get user's Islamic reminders configuration
+        const config = await db.get(`
+            SELECT * FROM islamic_reminders_config 
+            WHERE user_id = ?
+        `, [req.user.id]);
+
+        // Get adhkar settings
+        const adhkarSettings = config ? await db.get(`
+            SELECT * FROM adhkar_settings 
+            WHERE config_id = ?
+        `, [config.id]) : null;
+
+        // Get prayer reminders
+        const prayerReminders = config ? await db.all(`
+            SELECT * FROM prayer_reminders 
+            WHERE config_id = ?
+            ORDER BY prayer_name
+        `, [config.id]) : [];
+
+        // Get fasting settings
+        const fastingSettings = config ? await db.get(`
+            SELECT * FROM fasting_settings 
+            WHERE config_id = ?
+        `, [config.id]) : null;
+
+        res.render('dashboard/islamic-reminders', { 
+            user: req.user,
+            config: config || {},
+            adhkarSettings: adhkarSettings || {},
+            prayerReminders: prayerReminders || [],
+            fastingSettings: fastingSettings || {}
+        });
     } catch (error) {
         console.error('Error loading Islamic Reminders dashboard:', error);
         res.status(500).send('خطأ في تحميل صفحة التذكيرات الإسلامية');

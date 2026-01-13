@@ -188,20 +188,32 @@
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.3s ease-out;
-            background: rgba(0, 0, 0, 0.02);
+            background: var(--bg-secondary);
             border-radius: var(--radius-sm);
+            margin: 4px 0;
+            border-right: 3px solid var(--primary);
         }
 
         .submenu.open {
             max-height: 500px;
             /* Arbitrary large height */
             transition: max-height 0.5s ease-in;
+            padding: 8px 0;
         }
 
         .submenu .admin-nav-item {
             padding-right: 2.5rem;
             /* Indent submenu items */
             font-size: 0.9em;
+            margin: 2px 8px;
+            border-radius: 6px;
+            background: var(--bg-card);
+            border: 1px solid transparent;
+        }
+
+        .submenu .admin-nav-item:hover {
+            background: var(--primary-light);
+            border-color: var(--primary);
         }
 
         .submenu-arrow {
@@ -1127,16 +1139,26 @@
 
                 <!-- User Systems Submenu -->
                 <div class="admin-nav-item submenu-trigger" onclick="toggleSubmenu('user-systems-submenu')"
-                    data-tooltip="أنظمة المستخدمين">
-                    <i class="fas fa-cubes"></i>
+                    data-tooltip="أنظمة المستخدمين"
+                    style="background: var(--bg-secondary); border: 1px solid var(--border);">
+                    <i class="fas fa-cubes" style="color: var(--primary);"></i>
                     <span>أنظمة المستخدمين</span>
                     <i class="fas fa-chevron-down submenu-arrow"></i>
                 </div>
                 <div id="user-systems-submenu" class="submenu">
                     <div class="admin-nav-item" onclick="window.location.href='/dashboard/islamic-reminders'"
-                        data-tooltip="التذكيرات الإسلامية">
-                        <i class="fas fa-mosque"></i>
+                        data-tooltip="التذكيرات الإسلامية"
+                        style="position: relative;">
+                        <i class="fas fa-mosque" style="color: var(--primary);"></i>
                         <span>التذكيرات الإسلامية</span>
+                        <span style="position: absolute; left: 8px; top: 50%; transform: translateY(-50%); background: #4CAF50; color: white; border-radius: 50%; width: 8px; height: 8px; font-size: 0.6rem; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-check" style="font-size: 0.5rem;"></i>
+                        </span>
+                    </div>
+                    <div class="admin-nav-item" onclick="window.open('https://example.com/future-system', '_blank')"
+                        data-tooltip="أنظمة إضافية (قريباً)">
+                        <i class="fas fa-plus-circle" style="color: var(--text-muted);"></i>
+                        <span style="color: var(--text-muted);">أنظمة أخرى (قريباً)</span>
                     </div>
                 </div>
 
@@ -1162,7 +1184,7 @@
                     <!-- Mobile Menu Toggle Button -->
                     <button id="mobile-menu-toggle"
                         style="display: none; background: var(--bg-secondary); border: none; padding: 10px 12px; border-radius: var(--radius-sm); cursor: pointer; color: var(--text-main); font-size: 1.2rem; transition: all 0.3s;"
-                        onclick="toggleAdminSidebar()" title="فتح القائمة">
+                        onclick="toggleAdminSidebar(event)" ontouchend="toggleAdminSidebar(event)" title="فتح القائمة">
                         <i class="fas fa-bars"></i>
                     </button>
                     <div>
@@ -2609,10 +2631,20 @@
         };
 
         // Sidebar Toggle
-        function toggleAdminSidebar() {
+        function toggleAdminSidebar(event) {
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            
             const sidebar = document.querySelector('.admin-sidebar');
             const overlay = document.getElementById('sidebar-overlay');
             const header = document.getElementById('admin-header');
+
+            if (!sidebar) {
+                console.error('Admin sidebar element not found');
+                return;
+            }
 
             sidebar.classList.toggle('open');
 
@@ -2703,14 +2735,22 @@
 
         // Toggle Submenu
         function toggleSubmenu(id) {
+            console.log('Toggle submenu called with id:', id);
             const submenu = document.getElementById(id);
             const trigger = document.querySelector(`[onclick="toggleSubmenu('${id}')"]`);
 
+            console.log('Submenu element:', submenu);
+            console.log('Trigger element:', trigger);
+
             if (submenu) {
                 submenu.classList.toggle('open');
+                console.log('Submenu classes after toggle:', submenu.classList.toString());
                 if (trigger) {
                     trigger.classList.toggle('open');
+                    console.log('Trigger classes after toggle:', trigger.classList.toString());
                 }
+            } else {
+                console.error('Submenu element not found for id:', id);
             }
         }
 
@@ -2761,6 +2801,8 @@
 
         // Tab Switching
 
+        // Submenu toggle function
+
 
         // Current filter for activation requests
         let currentActivationFilter = 'all';
@@ -2768,8 +2810,13 @@
         // Load Unified Activation Requests (Payments + Pending Subscriptions)
         async function loadActivationRequests() {
             try {
+                console.log('📋 Fetching activation requests...');
                 const res = await fetch('/api/admin/activation-requests');
+                if (!res.ok) {
+                    throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+                }
                 const allRequests = await res.json();
+                console.log('📋 Received activation requests:', allRequests.length, 'requests');
                 const tbody = document.getElementById('payments-tbody');
 
                 // Apply filter
@@ -2854,7 +2901,17 @@
                 }).join('');
 
             } catch (error) {
-                console.error('Error loading activation requests:', error);
+                console.error('❌ Error loading activation requests:', error);
+                const tbody = document.getElementById('payments-tbody');
+                if (tbody) {
+                    tbody.innerHTML = `<tr>
+                        <td colspan="9" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #f44336; margin-bottom: 1rem; display: block;"></i>
+                            <div style="font-size: 1.1rem; font-weight: 600;">خطأ في تحميل الطلبات</div>
+                            <div style="font-size: 0.9rem; margin-top: 0.5rem;">${error.message}</div>
+                        </td>
+                    </tr>`;
+                }
             }
         }
 
@@ -2965,18 +3022,32 @@
         // Load Stats
         async function loadStats() {
             try {
+                console.log('📊 Fetching dashboard stats...');
                 const res = await fetch('/api/admin/stats');
+                if (!res.ok) {
+                    throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+                }
                 const data = await res.json();
-                document.getElementById('stat-users').textContent = data.totalUsers;
+                console.log('📊 Received stats:', data);
+                
+                document.getElementById('stat-users').textContent = data.totalUsers || 0;
                 const adminStat = document.getElementById('stat-admins');
-                if (adminStat) adminStat.textContent = data.totalAdmins;
-                document.getElementById('stat-active').textContent = data.activeSubscriptions;
-                document.getElementById('stat-pending').textContent = data.pendingSubscriptions;
+                if (adminStat) adminStat.textContent = data.totalAdmins || 0;
+                document.getElementById('stat-active').textContent = data.activeSubscriptions || 0;
+                document.getElementById('stat-pending').textContent = data.pendingSubscriptions || 0;
 
                 // Load notifications
                 loadNotifications();
+                
+                console.log('✅ Dashboard stats loaded successfully');
             } catch (error) {
-                console.error('Error loading stats:', error);
+                console.error('❌ Error loading stats:', error);
+                // Show fallback data
+                document.getElementById('stat-users').textContent = 'خطأ';
+                const adminStat = document.getElementById('stat-admins');
+                if (adminStat) adminStat.textContent = 'خطأ';
+                document.getElementById('stat-active').textContent = 'خطأ';
+                document.getElementById('stat-pending').textContent = 'خطأ';
             }
         }
 
@@ -3064,6 +3135,7 @@
 
         async function loadUsers() {
             try {
+                console.log('👥 Fetching users...');
                 const dateFrom = document.getElementById('date-from')?.value;
                 const dateTo = document.getElementById('date-to')?.value;
 
@@ -3075,13 +3147,19 @@
                 if (params.toString()) url += '?' + params.toString();
 
                 const res = await fetch(url);
+                if (!res.ok) {
+                    throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+                }
                 allUsers = await res.json();
+                console.log('👥 Received users:', allUsers.length, 'users');
 
                 // Update counts
                 updateUserCounts();
 
                 // Display users
                 displayUsers();
+                
+                console.log('✅ Users loaded successfully');
             } catch (error) {
                 console.error('Error loading users:', error);
             }
@@ -5454,6 +5532,10 @@
             updateCurrentDate();
             loadNotifications();
 
+            // Load initial dashboard data
+            console.log('Loading initial dashboard data...');
+            loadStats();
+
             // Delay dynamic tabs loading to ensure DOM is fully ready
             setTimeout(() => {
                 loadAdminTabs().catch(err => {
@@ -5578,13 +5660,30 @@
             }
 
             // Load data when switching tabs
-            if (tabName === 'users') loadUsers();
-
-            if (tabName === 'plans') loadPlans();
-            if (tabName === 'payments') loadActivationRequests();
-            if (tabName === 'whatsapp') loadSessions();
-            if (tabName === 'dashboard') loadStats();
-            if (tabName === 'content_library') loadContentLibrary();
+            if (tabName === 'users') {
+                console.log('Loading users...');
+                loadUsers();
+            }
+            if (tabName === 'plans') {
+                console.log('Loading plans...');
+                loadPlans();
+            }
+            if (tabName === 'payments') {
+                console.log('Loading activation requests...');
+                loadActivationRequests();
+            }
+            if (tabName === 'whatsapp') {
+                console.log('Loading WhatsApp sessions...');
+                loadSessions();
+            }
+            if (tabName === 'dashboard') {
+                console.log('Loading dashboard stats...');
+                loadStats();
+            }
+            if (tabName === 'content_library') {
+                console.log('Loading content library...');
+                loadContentLibrary();
+            }
         }
 
         // ==================== CONTENT LIBRARY SCRIPTS ====================
@@ -5766,6 +5865,36 @@
         }
     </style>
     <div id="toast-container" class="toast-container"></div>
+    
+    <script>
+        // Enhanced mobile menu support for admin dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-open User Systems submenu if on Islamic Reminders page
+            if (window.location.pathname === '/dashboard/islamic-reminders') {
+                toggleSubmenu('user-systems-submenu');
+            }
+            // Prevent double-tap zoom on mobile menu buttons
+            document.addEventListener('touchstart', function(e) {
+                if (e.target.closest('#mobile-menu-toggle') || e.target.closest('.admin-nav-item')) {
+                    e.preventDefault();
+                }
+            }, { passive: false });
+
+            // Close sidebar when clicking nav items on mobile
+            document.querySelectorAll('.admin-nav-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    if (window.innerWidth <= 1024) {
+                        const sidebar = document.querySelector('.admin-sidebar');
+                        const overlay = document.getElementById('sidebar-overlay');
+                        if (sidebar && sidebar.classList.contains('open')) {
+                            sidebar.classList.remove('open');
+                            if (overlay) overlay.style.display = 'none';
+                        }
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 
 </html>

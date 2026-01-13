@@ -12,16 +12,20 @@ COPY package*.json ./
 
 # Update npm to latest version and install dependencies
 RUN npm install -g npm@latest && \
-  npm install --omit=dev
+    npm ci --omit=dev && \
+    npm cache clean --force && \
+    rm -rf /tmp/* /var/tmp/*
 
 # Copy application files
 COPY . .
 
-# Create necessary directories
-RUN mkdir -p uploads src/auth_sessions src/database
+# Create necessary directories with proper structure for cloud
+RUN mkdir -p uploads src/auth_sessions src/database data public/receipts && \
+    chmod -R 755 /app && \
+    chown -R node:node /app
 
-# Set proper permissions
-RUN chmod -R 755 /app
+# Switch to non-root user for security
+USER node
 
 # Expose port
 EXPOSE 3001

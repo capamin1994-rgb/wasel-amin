@@ -5,11 +5,15 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
+    "start:prod": "NODE_ENV=production node server.js",
+    "health-check": "node health-check.js",
     "test": "jest --forceExit",
     "postinstall": "npm rebuild sqlite3",
     "testsprite:server": "node tools/testsprite.js server",
     "testsprite:run": "node tools/testsprite.js run",
-    "testsprite:rerun": "node tools/testsprite.js rerun"
+    "testsprite:rerun": "node tools/testsprite.js rerun",
+    "migrate": "node scripts/migrate.js",
+    "reset-admin": "node scripts/reset_admin.js"
   },
   "dependencies": {
     "@hapi/boom": "^10.0.1",

@@ -84,6 +84,7 @@ app.init = async () => {
         }, 10000); // Wait 10 seconds after server start to ensure all services are ready
 
         console.log('Server initialization completed');
+        app.isInitialized = true;
     } catch (e) {
         console.error('Failed to initialize:', e);
         app.initializationError = e;
@@ -122,6 +123,35 @@ app.get('/favicon.ico', (req, res) => {
 
 // Admin API Routes
 app.use('/api/admin', authenticateToken, adminRoutes);
+
+// Health check endpoint for cloud monitoring
+app.get('/api/health', (req, res) => {
+    const health = {
+        status: 'OK',
+        timestamp: new Date().toISOString(),
+        environment: process.env.NODE_ENV || 'development',
+        memory: process.memoryUsage(),
+        uptime: process.uptime(),
+        initialized: app.isInitialized || false
+    };
+    
+    if (app.initializationError) {
+        health.status = 'ERROR';
+        health.error = app.initializationError.message;
+        return res.status(500).json(health);
+    }
+    
+    res.json(health);
+});
+
+// Readiness probe for Kubernetes/Cloud platforms
+app.get('/api/ready', (req, res) => {
+    if (app.isInitialized) {
+        res.json({ status: 'READY', timestamp: new Date().toISOString() });
+    } else {
+        res.status(503).json({ status: 'NOT_READY', timestamp: new Date().toISOString() });
+    }
+});
 
 // Enhanced WhatsApp API Routes with security
 const whatsappRoutes = require('./src/routes/whatsapp');
@@ -346,6 +376,16 @@ app.get('/dashboard/settings', async (req, res) => {
 
     const settings = await SettingsService.get('landing_page');
     res.render('dashboard/settings', { user: req.user, settings });
+});
+
+// Islamic Reminders Dashboard Route
+app.get('/dashboard/islamic-reminders', authenticateToken, async (req, res) => {
+    try {
+        res.render('dashboard/islamic-reminders', { user: req.user });
+    } catch (error) {
+        console.error('Error loading Islamic Reminders dashboard:', error);
+        res.status(500).send('خطأ في تحميل صفحة التذكيرات الإسلامية');
+    }
 });
 
 app.post('/dashboard/settings', authenticateToken, async (req, res) => {

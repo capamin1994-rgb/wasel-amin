@@ -76,9 +76,12 @@ class ServerOptimizer {
         // تحسين إعدادات Node.js
         process.env.UV_THREADPOOL_SIZE = Math.max(4, os.cpus().length);
 
-        // تحسين Garbage Collection
+        // تحسين Garbage Collection للبيئة السحابية
         if (process.env.NODE_ENV === 'production') {
-            process.env.NODE_OPTIONS = '--max-old-space-size=2048 --optimize-for-size';
+            // Cloud environments typically have limited RAM (512MB on free tier)
+            const maxMemory = process.env.MAX_OLD_SPACE_SIZE || '512';
+            process.env.NODE_OPTIONS = `--max-old-space-size=${maxMemory} --optimize-for-size`;
+            console.log(`💾 Memory limit set to ${maxMemory}MB for cloud environment`);
         }
 
         // معالجة الأخطاء غير المتوقعة

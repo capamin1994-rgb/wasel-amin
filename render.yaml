@@ -13,3 +13,23 @@ services:
         value: wasel_secret_key_1994_secure
       - key: NODE_VERSION
         value: 20
+      - key: DATABASE_PATH
+        value: /app/data/app.db
+      - key: UPLOAD_PATH
+        value: /app/uploads
+      - key: MAX_CONCURRENT_SESSIONS
+        value: 50
+      - key: ENABLE_LOGGING
+        value: true
+      - key: SQLITE_JOURNAL_MODE
+        value: WAL
+      - key: SQLITE_CACHE_SIZE
+        value: 10000
+      - key: MAX_OLD_SPACE_SIZE
+        value: 512
+      - key: CONNECTION_TIMEOUT
+        value: 60000
+      - key: MAX_CONNECTION_ATTEMPTS
+        value: 3
+      - key: RETRY_DELAY
+        value: 5000

@@ -1,8 +1,62 @@
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 
-const dbPath = process.env.NODE_ENV === 'test' ? ':memory:' : path.join(__dirname, 'app.db');
-const db = new sqlite3.Database(dbPath);
+// Enhanced database path for cloud environments
+const getDbPath = () => {
+    if (process.env.NODE_ENV === 'test') {
+        return ':memory:';
+    }
+    
+    // For cloud environments, try to use a persistent volume or fallback
+    const possiblePaths = [
+        process.env.DATABASE_PATH, // Custom path from environment
+        '/app/data/app.db',        // Docker volume mount
+        path.join(process.cwd(), 'data', 'app.db'), // Data directory
+        path.join(__dirname, 'app.db')  // Fallback to original
+    ];
+    
+    for (const dbPath of possiblePaths) {
+        if (dbPath) {
+            try {
+                const dir = path.dirname(dbPath);
+                if (!require('fs').existsSync(dir)) {
+                    require('fs').mkdirSync(dir, { recursive: true });
+                }
+                console.log(`📁 Using database path: ${dbPath}`);
+                return dbPath;
+            } catch (e) {
+                console.warn(`⚠️ Failed to create directory for ${dbPath}:`, e.message);
+            }
+        }
+    }
+    
+    return path.join(__dirname, 'app.db');
+};
+
+const dbPath = getDbPath();
+const db = new sqlite3.Database(dbPath, (err) => {
+    if (err) {
+        console.error('❌ Database connection failed:', err.message);
+    } else {
+        console.log(`✅ Database connected: ${dbPath}`);
+        
+        // Optimize SQLite for cloud environments
+        db.exec(`
+            PRAGMA journal_mode = ${process.env.SQLITE_JOURNAL_MODE || 'WAL'};
+            PRAGMA synchronous = NORMAL;
+            PRAGMA cache_size = ${process.env.SQLITE_CACHE_SIZE || '10000'};
+            PRAGMA temp_store = MEMORY;
+            PRAGMA mmap_size = 268435456;
+            PRAGMA optimize;
+        `, (err) => {
+            if (err) {
+                console.warn('⚠️ SQLite optimization failed:', err.message);
+            } else {
+                console.log('⚡ SQLite optimized for cloud environment');
+            }
+        });
+    }
+});
 
 // Async Wrapper
 const dbAsync = {

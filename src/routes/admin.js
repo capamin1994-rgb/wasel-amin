@@ -12,9 +12,20 @@ const sessionManager = require('../services/baileys/SessionManager');
 // Middleware to check admin role
 const requireAdmin = (req, res, next) => {
     console.log(`[AdminAPI] ${req.method} ${req.originalUrl}`);
+    
+    // Check if user exists
+    if (!req.user) {
+        console.log('[AdminAPI] No user found in request');
+        return res.status(401).json({ error: 'Authentication required' });
+    }
+    
+    // Check if user has admin role
     if (req.user.role !== 'admin') {
+        console.log(`[AdminAPI] User ${req.user.email} does not have admin role (current role: ${req.user.role})`);
         return res.status(403).json({ error: 'Unauthorized' });
     }
+    
+    console.log(`[AdminAPI] Admin access granted for ${req.user.email}`);
     next();
 };
 

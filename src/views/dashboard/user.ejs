@@ -554,13 +554,13 @@
     </head>
 
     <body>
-        <button class="sidebar-toggle" onclick="toggleSidebar()">
+        <button class="sidebar-toggle" onclick="toggleSidebar(event)" ontouchend="toggleSidebar(event)">
             <i class="fas fa-bars"></i>
         </button>
 
         <div id="sidebar-overlay"
             style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999;"
-            onclick="toggleSidebar()"></div>
+            onclick="toggleSidebar(event)" ontouchend="toggleSidebar(event)"></div>
 
         <div class="admin-layout">
             <aside class="admin-sidebar" id="adminSidebar">
@@ -1226,14 +1226,35 @@
                 { code: '+39', name: 'إيطاليا', flag: '🇮🇹' }
             ];
 
-            function toggleSidebar() {
-                const sidebar = document.getElementById('adminSidebar');
+            function toggleSidebar(event) {
+                if (event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                
+                const sidebar = document.querySelector('.admin-sidebar');
+                const overlay = document.getElementById('sidebar-overlay');
+                
+                if (!sidebar) {
+                    console.error('Sidebar element not found');
+                    return;
+                }
+                
                 sidebar.classList.toggle('open');
-                document.getElementById('sidebar-overlay').style.display = sidebar.classList.contains('open') ? 'block' : 'none';
+                
+                if (overlay) {
+                    overlay.style.display = sidebar.classList.contains('open') ? 'block' : 'none';
+                } else {
+                    console.warn('Sidebar overlay not found');
+                }
             }
 
             function collapseSidebar() {
-                const sidebar = document.getElementById('adminSidebar');
+                const sidebar = document.querySelector('.admin-sidebar');
+                if (!sidebar) {
+                    console.error('Sidebar element not found');
+                    return;
+                }
                 sidebar.classList.toggle('collapsed');
                 // Save state
                 localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
@@ -1250,8 +1271,10 @@
                 document.getElementById(tabId + '-tab').classList.add('active');
 
                 if (window.innerWidth <= 1024) {
-                    document.getElementById('adminSidebar').classList.remove('open');
-                    document.getElementById('sidebar-overlay').style.display = 'none';
+                    const sidebar = document.querySelector('.admin-sidebar');
+                    const overlay = document.getElementById('sidebar-overlay');
+                    if (sidebar) sidebar.classList.remove('open');
+                    if (overlay) overlay.style.display = 'none';
                 }
             }
 
@@ -1278,7 +1301,8 @@
                 // Restore sidebar collapsed state
                 const sidebarCollapsed = localStorage.getItem('sidebarCollapsed');
                 if (sidebarCollapsed === 'true') {
-                    document.getElementById('adminSidebar').classList.add('collapsed');
+                    const sidebar = document.querySelector('.admin-sidebar');
+                    if (sidebar) sidebar.classList.add('collapsed');
                 }
 
                 document.getElementById('add-session-form').addEventListener('submit', async (e) => {
@@ -2641,6 +2665,28 @@ ent.getElementById('country-search').value = 'مصر';
             if (qiblaDegreeElem && currentCountry && qiblaData[currentCountry]) {
                 qiblaDegreeElem.innerText = qiblaData[currentCountry];
             }
+            
+            // Enhanced mobile menu support
+            document.addEventListener('touchstart', function(e) {
+                // Prevent double-tap zoom on buttons
+                if (e.target.closest('.sidebar-toggle') || e.target.closest('.admin-nav-item')) {
+                    e.preventDefault();
+                }
+            }, { passive: false });
+
+            // Close sidebar when clicking nav items on mobile
+            document.querySelectorAll('.admin-nav-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    if (window.innerWidth <= 1024) {
+                        const sidebar = document.querySelector('.admin-sidebar');
+                        const overlay = document.getElementById('sidebar-overlay');
+                        if (sidebar && sidebar.classList.contains('open')) {
+                            sidebar.classList.remove('open');
+                            if (overlay) overlay.style.display = 'none';
+                        }
+                    }
+                });
+            });
         });
     </script>
     </body>

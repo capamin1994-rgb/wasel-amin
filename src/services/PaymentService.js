@@ -2,6 +2,23 @@ const { db } = require('../database/db');
 const messageService = require('./baileys/MessageService');
 const sessionManager = require('./baileys/SessionManager');
 const NotificationService = require('./NotificationService');
+const fs = require('fs');
+const path = require('path');
+
+// Cloud-friendly upload path
+const getUploadPath = () => {
+    return process.env.UPLOAD_PATH || path.join(process.cwd(), 'uploads');
+};
+
+// Ensure upload directory exists
+const ensureUploadDir = () => {
+    const uploadPath = getUploadPath();
+    if (!fs.existsSync(uploadPath)) {
+        fs.mkdirSync(uploadPath, { recursive: true });
+        console.log(`📁 Created upload directory: ${uploadPath}`);
+    }
+    return uploadPath;
+};
 
 class PaymentService {
 

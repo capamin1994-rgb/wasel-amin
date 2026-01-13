@@ -49,5 +49,5 @@ COPY --chown=node:node health-check.js .
 HEALTHCHECK --interval=30s --timeout=15s --start-period=60s --retries=3 \
   CMD node health-check.js
 
-# Optimize for production startup
-CMD ["npm", "start"]
+# Start server directly (Avoiding npm wrap for better signal handling and path reliability)
+CMD ["node", "server.js"]

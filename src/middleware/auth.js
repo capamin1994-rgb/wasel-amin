@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const SECRET = 'super_secret_key_123'; // In prod, use process.env
+const SECRET = process.env.JWT_SECRET || 'super_secret_key_123'; // In prod, use process.env
 
 const authenticateToken = (req, res, next) => {
     const token = req.cookies.token;
@@ -34,7 +34,7 @@ const isAdmin = (req, res, next) => {
 };
 
 const generateToken = (user) => {
-    return jwt.sign({ id: user.id, name: user.name, role: user.role }, SECRET, { expiresIn: '24h' });
+    return jwt.sign({ id: user.id, name: user.name, email: user.email, role: user.role }, SECRET, { expiresIn: '24h' });
 };
 
 module.exports = { authenticateToken, isAdmin, generateToken };

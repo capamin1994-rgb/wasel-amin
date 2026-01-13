@@ -45,3 +45,5 @@ services:
         value: error
       - key: SUPPRESS_NO_CONFIG_WARNING
         value: true
+      - key: NODE_OPTIONS
+        value: "--max-old-space-size=450 --optimize-for-size"

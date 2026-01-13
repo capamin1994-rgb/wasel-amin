@@ -7,7 +7,7 @@ const os = require('os');
 if (process.env.NODE_ENV === 'production') {
     // Suppress specific warnings
     const originalEmit = process.emit;
-    process.emit = function(name, data, ...args) {
+    process.emit = function (name, data, ...args) {
         if (name === 'warning' && data.name === 'DeprecationWarning') {
             return false;
         }
@@ -42,10 +42,10 @@ class ServerOptimizer {
         // إضافة headers للتحسين والأمان
         app.use((req, res, next) => {
             const isDev = req.hostname === 'localhost' || req.hostname === '127.0.0.1';
-            
+
             // تعزيز سياسة أمن المحتوى (CSP)
             // في وضع التطوير نسمح باتصالات أوسع لتجنب مشاكل DevTools و WebSockets
-            const cspHeader = isDev 
+            const cspHeader = isDev
                 ? "default-src 'self' http: https: data: blob: ws: wss:; script-src 'self' 'unsafe-inline' 'unsafe-eval' http: https:; style-src 'self' 'unsafe-inline' http: https:; img-src 'self' data: blob: http: https:; connect-src * 'self' http: https: ws: wss:; font-src 'self' http: https: data:; object-src 'none'; frame-src 'self' http: https:;"
                 : "default-src 'self' https: data: blob: ws: wss:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: blob: https:; connect-src 'self' https: ws: wss:; font-src 'self' https: data:; object-src 'none'; frame-src 'self' https:;";
 
@@ -56,7 +56,7 @@ class ServerOptimizer {
             res.setHeader('X-Content-Type-Options', 'nosniff');
             res.setHeader('X-Frame-Options', 'DENY');
             res.setHeader('X-XSS-Protection', '1; mode=block');
-            
+
             next();
         });
 
@@ -93,10 +93,8 @@ class ServerOptimizer {
 
         // تحسين Garbage Collection للبيئة السحابية
         if (process.env.NODE_ENV === 'production') {
-            // Cloud environments typically have limited RAM (512MB on free tier)
             const maxMemory = process.env.MAX_OLD_SPACE_SIZE || '512';
-            process.env.NODE_OPTIONS = `--max-old-space-size=${maxMemory} --optimize-for-size`;
-            console.log(`💾 Memory limit set to ${maxMemory}MB for cloud environment`);
+            console.log(`💾 Memory limit configured to ${maxMemory}MB via deployment settings`);
         }
 
         // معالجة الأخطاء غير المتوقعة

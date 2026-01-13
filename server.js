@@ -1,3 +1,7 @@
+// Suppress Node.js warnings and deprecation notices
+process.env.NODE_NO_WARNINGS = '1';
+process.env.SUPPRESS_NO_CONFIG_WARNING = 'true';
+
 const express = require('express');
 const path = require('path');
 const helmet = require('helmet');

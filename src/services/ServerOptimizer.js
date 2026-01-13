@@ -3,6 +3,21 @@ const compression = require('compression');
 const cluster = require('cluster');
 const os = require('os');
 
+// Suppress warnings for production
+if (process.env.NODE_ENV === 'production') {
+    // Suppress specific warnings
+    const originalEmit = process.emit;
+    process.emit = function(name, data, ...args) {
+        if (name === 'warning' && data.name === 'DeprecationWarning') {
+            return false;
+        }
+        if (name === 'warning' && data.message && data.message.includes('deprecated')) {
+            return false;
+        }
+        return originalEmit.apply(process, arguments);
+    };
+}
+
 class ServerOptimizer {
     static applyOptimizations(app) {
         // ضغط الاستجابات

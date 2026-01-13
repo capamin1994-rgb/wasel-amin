@@ -4,6 +4,10 @@ services:
     env: docker
     plan: free
     region: oregon
+    buildCommand: echo "Docker build will handle dependencies"
+    startCommand: npm start
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
     envVars:
       - key: NODE_ENV
         value: production
@@ -33,3 +37,11 @@ services:
         value: 3
       - key: RETRY_DELAY
         value: 5000
+      - key: NPM_CONFIG_FUND
+        value: false
+      - key: NPM_CONFIG_AUDIT
+        value: false
+      - key: NPM_CONFIG_LOGLEVEL
+        value: error
+      - key: SUPPRESS_NO_CONFIG_WARNING
+        value: true

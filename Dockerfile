@@ -1,26 +1,41 @@
-# Use Node.js LTS version (20+)
+# Use Node.js LTS version with better optimizations
 FROM node:20-alpine
+
+# Set build arguments
+ARG NODE_ENV=production
+ENV NODE_ENV=${NODE_ENV}
 
 # Set working directory
 WORKDIR /app
 
-# Install dependencies for better-sqlite3 and other native modules
-RUN apk add --no-cache python3 make g++ wget git
+# Install system dependencies with version pinning for stability
+RUN apk add --no-cache \
+    python3 \
+    make \
+    g++ \
+    wget \
+    git \
+    sqlite \
+    && rm -rf /var/cache/apk/*
 
-# Copy package files
+# Copy package files first for better Docker layer caching
 COPY package*.json ./
 
-# Update npm to latest version and install dependencies
-RUN npm install -g npm@latest && \
-    npm ci --omit=dev && \
+# Install dependencies with optimizations and suppress warnings
+RUN set -x && \
+    npm config set audit-level moderate && \
+    npm config set fund false && \
+    npm config set optional false && \
+    npm install -g npm@latest --silent && \
+    npm ci --omit=dev --silent --no-fund --no-audit && \
     npm cache clean --force && \
-    rm -rf /tmp/* /var/tmp/*
+    rm -rf ~/.npm /tmp/* /var/tmp/* /root/.cache
 
 # Copy application files
 COPY . .
 
-# Create necessary directories with proper structure for cloud
-RUN mkdir -p uploads src/auth_sessions src/database data public/receipts && \
+# Create application structure with proper permissions
+RUN mkdir -p uploads src/auth_sessions src/database data public/receipts logs && \
     chmod -R 755 /app && \
     chown -R node:node /app
 
@@ -30,9 +45,12 @@ USER node
 # Expose port
 EXPOSE 3001
 
-# Start the application
-CMD ["npm", "start"]
+# Use multi-stage health check script
+COPY --chown=node:node health-check.js .
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:3001 || exit 1
+# Enhanced health check with proper endpoint
+HEALTHCHECK --interval=30s --timeout=15s --start-period=60s --retries=3 \
+  CMD node health-check.js
+
+# Optimize for production startup
+CMD ["npm", "start"]

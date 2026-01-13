@@ -21,13 +21,11 @@ RUN apk add --no-cache \
 # Copy package files first for better Docker layer caching
 COPY package*.json ./
 
-# Install dependencies with optimizations and suppress warnings
-RUN set -x && \
-    npm config set audit-level moderate && \
+# Install dependencies with optimizations
+RUN npm config set audit-level moderate && \
     npm config set fund false && \
     npm config set optional false && \
-    npm install -g npm@latest --silent && \
-    npm ci --omit=dev --silent --no-fund --no-audit && \
+    npm ci --omit=dev --no-fund --no-audit && \
     npm cache clean --force && \
     rm -rf ~/.npm /tmp/* /var/tmp/* /root/.cache
 

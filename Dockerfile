@@ -24,8 +24,7 @@ COPY package*.json ./
 # Install dependencies with optimizations
 RUN npm config set audit-level moderate && \
     npm config set fund false && \
-    npm config set optional false && \
-    npm ci --omit=dev --no-fund --no-audit && \
+    npm ci --omit=dev --omit=optional --no-fund --no-audit && \
     npm cache clean --force && \
     rm -rf ~/.npm /tmp/* /var/tmp/* /root/.cache
 

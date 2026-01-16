@@ -1,0 +1,42 @@
+[
+  {
+    "id": "TC001",
+    "title": "user authentication login and registration",
+    "description": "Test user registration and login endpoints to verify JWT token issuance, cookie management, and secure session handling."
+  },
+  {
+    "id": "TC002",
+    "title": "admin dashboard user and subscription management",
+    "description": "Verify admin endpoints for managing users, subscriptions, and system settings including data retrieval and updates."
+  },
+  {
+    "id": "TC003",
+    "title": "whatsapp session management and message handling",
+    "description": "Test WhatsApp session creation via QR code scanning, connection establishment, and message sending/receiving using Baileys library."
+  },
+  {
+    "id": "TC004",
+    "title": "islamic reminders scheduling and delivery",
+    "description": "Validate scheduling APIs for Islamic reminders such as Adhkar, fasting schedules, and prayer times, ensuring reminders are sent based on user preferences."
+  },
+  {
+    "id": "TC005",
+    "title": "content management hadith and media access",
+    "description": "Test content service endpoints to retrieve and update Hadith, Islamic videos, background content, and other media."
+  },
+  {
+    "id": "TC006",
+    "title": "subscription plans and payment processing",
+    "description": "Verify subscription plan retrieval, selection, and payment processing endpoints including error handling and success confirmation."
+  },
+  {
+    "id": "TC007",
+    "title": "audit logging system activity tracking",
+    "description": "Test audit logging functionality to ensure system activities are recorded accurately and can be retrieved for audits."
+  },
+  {
+    "id": "TC008",
+    "title": "user settings management and persistence",
+    "description": "Validate user settings APIs for location, reminder preferences, and manual or automatic adjustments, ensuring changes persist and affect reminder schedules."
+  }
+]

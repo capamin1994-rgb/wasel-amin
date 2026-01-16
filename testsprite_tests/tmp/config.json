@@ -1,0 +1,16 @@
+{
+  "status": "commited",
+  "type": "frontend",
+  "scope": "codebase",
+  "localEndpoint": "http://localhost:3001/http://localhost:3001/",
+  "executionArgs": {
+    "projectName": "wasel",
+    "projectPath": "c:\\Users\\amin\\Desktop\\wasel",
+    "testIds": [],
+    "additionalInstruction": "",
+    "envs": {
+      "API_KEY": "sk-user-WKwJg3odqJPE1mlUcu0Aas6HyTK4heIdp99-kW_4WrSOQ5O_VSj2OpQ9BR5jznQ5zRcHBoyR35g1M7pvJiT1Phqs3IVwO2dg282nbhZsLzvZ1jH_9EJKa5Grijjhb12mAPo"
+    }
+  },
+  "proxy": "http://b154b5af-d946-408e-9d04-5b4ed10b3acd:cYnkOCMI5ovHdwomE8YjN3EBCus0uQ9D@tun.testsprite.com:8080"
+}

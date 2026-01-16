@@ -1,0 +1,57 @@
+{
+    "tech_stack": [
+        "Node.js",
+        "Express",
+        "EJS",
+        "Bootstrap",
+        "Vanilla JS"
+    ],
+    "features": [
+        {
+            "name": "Landing Page",
+            "description": "Public home page with features, pricing, and login links.",
+            "files": [
+                "src/views/landing.ejs"
+            ],
+            "url": "/"
+        },
+        {
+            "name": "Authentication",
+            "description": "User Login and Registration pages.",
+            "files": [
+                "src/views/login.ejs",
+                "src/views/register.ejs"
+            ],
+            "url": [
+                "/login",
+                "/register"
+            ]
+        },
+        {
+            "name": "Dashboard",
+            "description": "Main user dashboard after login.",
+            "files": [
+                "src/views/dashboard/user.ejs"
+            ],
+            "url": "/dashboard"
+        },
+        {
+            "name": "Islamic Reminders UI",
+            "description": "Dashboard section for configuring Islamic reminders.",
+            "files": [
+                "src/views/dashboard/islamic-reminders.ejs"
+            ],
+            "url": "/dashboard/islamic-reminders"
+        },
+        {
+            "name": "Payment",
+            "description": "Payment processing page for subscriptions.",
+            "files": [
+                "src/views/payment.ejs",
+                "src/views/payment_pending.ejs",
+                "src/views/payment_success.ejs"
+            ],
+            "url": "/payment"
+        }
+    ]
+}
